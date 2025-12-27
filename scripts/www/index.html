@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CAD题库自助刷题系统（完整版200题）</title>
+    <title>CAD题库v1.2我恨出生文本识别 : (</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,6 +11,7 @@
             margin: 0 auto;
             padding: 20px;
             background-color: #f5f5f5;
+            position: relative;
         }
         .container {
             background-color: white;
@@ -158,11 +159,115 @@
             font-size: 14px;
             margin-top: 10px;
         }
+        
+        /* 侧栏相关样式 */
+        .sidebar-btn {
+            position: fixed;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px 0 0 5px;
+            padding: 15px 10px;
+            cursor: pointer;
+            z-index: 999;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: #f8f9fa;
+            box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+            transition: right 0.3s ease;
+            z-index: 998;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .sidebar.active {
+            right: 0;
+        }
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .sidebar-header h2 {
+            margin: 0;
+        }
+        .close-sidebar {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #555;
+        }
+        .sidebar-content {
+            margin-top: 20px;
+        }
+        .sidebar-btn-group {
+            margin-bottom: 20px;
+        }
+        .sidebar-btn-group button {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 12px;
+        }
+        .record-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+        }
+        .record-item h4 {
+            margin: 0 0 5px 0;
+        }
+        .record-item p {
+            margin: 5px 0;
+        }
+        .error-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            position: relative;
+        }
+        .error-item .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 3px 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .no-records {
+            text-align: center;
+            color: #888;
+            font-style: italic;
+            padding: 20px;
+        }
+        .sidebar-content h3 {
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>CAD题库自助刷题系统（完整版200题）</h1>
+        <h1>CAD题库v1.2我恨出生文本识别 : (</h1>
         <div class="progress">
             已做: <span id="progress">0题</span> | 
             正确率: <span id="accuracy">0%</span>
@@ -183,6 +288,37 @@
         </div>
     </div>
 
+    <!-- 侧栏按钮 -->
+    <button class="sidebar-btn" id="sidebar-btn">☰</button>
+
+    <!-- 侧栏 -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>学习助手</h2>
+            <button class="close-sidebar" id="close-sidebar">&times;</button>
+        </div>
+        <div class="sidebar-content">
+            <div class="sidebar-btn-group">
+                <button id="show-records-btn">查看答题记录</button>
+                <button id="show-errors-btn">查看错题本</button>
+            </div>
+            
+            <div id="records-content" style="display:none;">
+                <h3>答题记录</h3>
+                <div id="records-list">
+                    <!-- 答题记录将动态加载到这里 -->
+                </div>
+            </div>
+            
+            <div id="errors-content" style="display:none;">
+                <h3>错题本</h3>
+                <div id="errors-list">
+                    <!-- 错题将动态加载到这里 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 确认重置弹窗 -->
     <div id="confirmModal" class="modal">
         <div class="modal-content">
@@ -196,7 +332,7 @@
     </div>
 
     <script>
-        // 题库数据（严格按照文档整理的200道题）
+        // 题库数据（根据提供的txt文件整理的200道题）
         const questionBank = [
             {
                 type: "单选题",
@@ -207,7 +343,7 @@
             },
             {
                 type: "单选题",
-                question: "在AutoCAD软件使用过程中，为查看帮助信息，应按的功能键是()。",
+                question: "在 AutoCAD 软件使用过程中，为查看帮助信息，应按的功能键是()。",
                 options: ["F1", "F2", "F6", "F10"],
                 answer: "A",
                 originalAnswer: 0  // A对应索引0
@@ -221,56 +357,56 @@
             },
             {
                 type: "单选题",
-                question: "AutoCAD使用极轴追踪绘图模式时，必须指定()。",
+                question: "AutoCAD 使用极轴追踪绘图模式时，必须指定()。",
                 options: ["增量角", "附加角", "基点", "长度"],
                 answer: "A",
                 originalAnswer: 0  // A对应索引0
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，使用()命令可以编辑多线的交点，修改多线的顶点，剪切或缝合多线。",
+                question: "在 AutoCAD 中，使用()命令可以编辑多线的交点，修改多线的顶点，剪切或缝合多线。",
                 options: ["Pedit", "Edit", "MLEdit", "Medit"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "在AutoCAD网络系统中，以下说法不正确的是()。",
+                question: "在 AutoCAD 网络系统中，以下说法不正确的是()。",
                 options: ["设计资料可以共享", "硬件可以共享", "电脑文件可以共享", "可以方便管理设计进度"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "AutoCAD中相对于复制对象，定义并插入块最主要的优点是()。",
+                question: "AutoCAD 中相对于复制对象，定义并插入块最主要的优点是()。",
                 options: ["速度快", "数据结构优化", "便于编辑管理", "可以任意缩放"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，以下关于打断命令说法错误的是()。",
-                options: ["打断命令可以将-5图分成两个相等部分", "打断命令可以部分删除图元", "打断命令可以利用键盘输入\"br\"启动", "打断命令可以将一条直线分成两段相连部分"],
+                question: "在 AutoCAD 中，以下关于打断命令说法错误的是()。",
+                options: ["打断命令可以将-5 图分成两个相等部分", "打断命令可以部分删除图元", "打断命令可以利用键盘输入\"br\"启动", "打断命令可以将一条直线分成两段相连部分"],
                 answer: "A",
                 originalAnswer: 0  // A对应索引0
             },
             {
                 type: "单选题",
-                question: "AutoCAD中用倒角命令\"chamfer\"进行倒角操作时()。",
+                question: "AutoCAD 中用倒角命令“chamfer”进行倒角操作时()。",
                 options: ["不能对多段线对象进行倒角", "可以对样条曲线对象进行倒角", "不能对文字对象进行倒角", "不能对三维实体对象进行倒角"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，以下关于对称，不正确的叙述是()。",
+                question: "在 AutoCAD 中，以下关于对称，不正确的叙述是()。",
                 options: ["平面中的点对称可以通过环型阵列实现", "平面中的轴对称可以通过矩形阵列实现", "平面中的轴对称可以通过\"MIRRIOR\"命令实现", "三维中的平面对称可以通过三维镜像实现"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "AutoCAD中默认存在的命名图层过滤器不包括()。",
+                question: "AutoCAD 中默认存在的命名图层过滤器不包括()。",
                 options: ["显示所有图层", "显示所有使用图层", "显示所有打印图层", "显示所有依赖于外部参照的图层"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
@@ -284,8 +420,8 @@
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，以下关于面域的叙述中，错误的是()。",
-                options: ["在AutoCAD中面域只能有一侧是可见的", "只在一个平面中的三维多段线可以被创建为面域", "面域可以通过命令\"REG\"、\"BO\"以及分解实体或复制面得到", "面域具有集合的性质"],
+                question: "在 AutoCAD 中，以下关于面域的叙述中，错误的是()。",
+                options: ["在 AutoCAD 中面域只能有一侧是可见的", "只在一个平面中的三维多段线可以被创建为面域", "面域可以通过命令\"REG\"、\"BO\"以及分解实体或复制面得到", "面域具有集合的性质"],
                 answer: "A",
                 originalAnswer: 0  // A对应索引0
             },
@@ -298,14 +434,14 @@
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，用\"格式刷\"复制源对象的厚度，其目标对象不可以为()。",
+                question: "在 AutoCAD 中，用“格式刷”复制源对象的厚度，其目标对象不可以为()。",
                 options: ["属性", "三维多段线", "面域", "文字"],
                 answer: "B",
                 originalAnswer: 1  // B对应索引1
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，以下关于图像剪裁边界说法错误的是()。",
+                question: "在 AutoCAD 中，以下关于图像剪裁边界说法错误的是()。",
                 options: ["使用矩形作为剪裁边界,绘制的矩形始终与图形的边平行", "剪裁边界只能有一个", "删除和关闭剪裁边界都会显示整个图像", "如果关闭剪裁后又重新剪裁图像,剪裁将自动关闭"],
                 answer: "B",
                 originalAnswer: 1  // B对应索引1
@@ -319,14 +455,14 @@
             },
             {
                 type: "单选题",
-                question: "AutoCAD中,打印区域选择()打印方式将当前空间的所有的几何图形打印。",
+                question: "AutoCAD 中,打印区域选择()打印方式将当前空间的所有的几何图形打印。",
                 options: ["布局或界限", "范围", "显示", "窗口"],
                 answer: "B",
                 originalAnswer: 1  // B对应索引1
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，如果将一个不符合标准的问题标记为忽略，那么()。",
+                question: "在 AutoCAD 中，如果将一个不符合标准的问题标记为忽略，那么()。",
                 options: ["下一次检查该图形时将不显示己标记为忽略的问题", "下一次检查该图形时将仍然会显示己标记为忽略的问题", "\"通知设置\"为\"标准冲夹时显示警告\"时,则下一次检查该图形时将不显示己标记为忽略的问题", "关闭了\"显示忽略的问题\"选项,下一次检查该图形时将不显示己标记为忽略的问题"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
@@ -347,71 +483,71 @@
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，下列功能键是用来开关\"对象追踪\"的()。",
+                question: "在 AutoCAD 中，下列功能键是用来开关“对象追踪”的()。",
                 options: ["F9", "F10", "F11", "F12"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "下面字体在AutoCAD中属于中文大字体样式的是()。",
-                options: ["gbenor.shx", "gbeitc.shx", "gbcbig.shx", "txt.shx"],
-                answer: "C",
-                originalAnswer: 2  // C对应索引2
+                question: "下面字体在 AutoCAD 中属于中文大字体样式的是()。",
+                options: ["gbenor.shx", "gbeit", "shx", "gbcbig.shx"],
+                answer: "D",
+                originalAnswer: 3  // D对应索引3
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，以下编辑命令适用于OLE对象的是()。",
+                question: "在 AutoCAD 中，以下编辑命令适用于 OLE 对象的是()。",
                 options: ["APPLY", "CHAMFER", "FILLET", "LENGTHEN"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "AutoCAD中，下列哪个命令不具有复制实体的功能？",
+                question: "AutoCAD 中，下列哪个命令不具有复制实体的功能？",
                 options: ["MIRROY", "ARRAY", "MOVE", "COPY"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，对视口的使用来讲，下列哪句话是正确的？",
+                question: "在 AutoCAD 中，对视口的使用来讲，下列哪句话是正确的？",
                 options: ["在模型空间中多视口可实现二维绘图中主,俯,左视图的绘制", "在模型空间中多个视口可同时激活", "多视口可用于显示模型的不同部分", "在模型空间中视口可平铺,也可重叠"],
                 answer: "A",
                 originalAnswer: 0  // A对应索引0
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，打开圈形文件G50310.DWG，现在要想将剖面线方向旋转15°，下面不可行的方法是()。",
-                options: ["在\"图案填充编辑\"对话框的\"图案填充\"页面中,将角度改为15°", "新建ucs,绕Z轴旋转15°,然后在\"图案填充编辑\"对话框的\"图案填充\"页面中,选择\"使用当前原点\"", "直接将图案旋转15°", "删除图案填充,重新填充,填充时在\"图案填充\"页面中,将角度改为15°"],
+                question: "在 AutoCAD 中，打开圈形文件G50310.DWG，现在要想将剖面线方向旋转15°，下面不可行的方法是()。",
+                options: ["在\"图案填充编辑\"对话框的\"图案填充\"页面中,将角度改为 15°", "新建 ucs,绕 Z 轴旋转 15°,然后在\"图案填充编辑\"对话框的\"图案填充\"页面中,选择\"使用当前原点\"", "直接将图案旋转 15°", "删除图案填充,重新填充,填充时在\"图案填充\"页面中,将角度改为 15°"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，如果要发布的图纸集，使用下列哪个选项更加快捷方便？",
+                question: "在 AutoCAD 中，如果要发布的图纸集，使用下列哪个选项更加快捷方便？",
                 options: ["\"图纸集管理器\"", "\"文件\"→\"发布\"", "\"文件\"→\"网上发布\"", "\"文件\"→\"电子传递\""],
                 answer: "A",
                 originalAnswer: 0  // A对应索引0
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，在查询直线角度时，其显示数值与()有关。",
+                question: "在 AutoCAD 中，在查询直线角度时，其显示数值与()有关。",
                 options: ["拾取点顺序", "直线与水平线所成角是锐角还是钝角", "直线两端点距离有关", "直线与竖直线素成角是锐角还是钝角"],
                 answer: "B",
                 originalAnswer: 1  // B对应索引1
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，关于尺寸标注，以下说法正确的是()。",
-                options: ["在尺寸标注时,不可以直接输入公差,需在村注样式中修改公差值", "在引线标注时,文字标注的位置可以在尺寸线上面,中间线下面", "在修改尺寸文字后,线性尺寸会随着尺寸的变化而变化,如直线为5、若改为10、则直线的长度为动设为10", "可通过设置在尺寸标注时,由用户控制尺寸置位置"],
+                question: "在 AutoCAD 中，关于尺寸标注，以下说法正确的是()。",
+                options: ["在尺寸标注时,不可以直接输入公差,需在村注样式中修改公差值", "在引线标注时,文字标注的位置可以在尺寸线上面,中间线下面", "在修改尺寸文字后,线性尺寸会随着尺寸的变化而变化,如直线为 5、若改为 10、则直线的长度为动设为 10", "可通过设置在尺寸标注时,由用户控制尺寸置位置"],
                 answer: "D",
                 originalAnswer: 3  // D对应索引3
             },
             {
                 type: "单选题",
-                question: "AutoCAD可以指定和添加各种类型文件的搜索路径，除了以下哪种文件？",
-                options: ["自动保存文件", "AutoCAD主应用程序文件", "菜单文件", "样板图形文件"],
+                question: "AutoCAD 可以指定和添加各种类型文件的搜索路径，除了以下哪种文件？",
+                options: ["自动保存文件", "AutoCAD 主应用程序文件", "菜单文件", "样板图形文件"],
                 answer: "B",
                 originalAnswer: 1  // B对应索引1
             },
@@ -424,14 +560,14 @@
             },
             {
                 type: "单选题",
-                question: "AutoCAD中，要创建与3个对象相切的圆可以()。",
-                options: ["选择【绘图】【圆】【相切、相切、相切】命令", "选择【绘图】【圆】【相切、相切、半径】命令", "选择【绘图】【圆】【三点】命令", "单击【圆】按钮,并在命令行内输入3P命令"],
+                question: "AutoCAD 中，要创建与 3 个对象相切的圆可以()。",
+                options: ["选择【绘图】【圆】【相切、相切、相切】命令", "选择【绘图】【圆】【相切、相切、半径】命令", "选择【绘图】【圆】【三点】命令", "单击【圆】按钮,并在命令行内输入 3P 命令"],
                 answer: "A",
                 originalAnswer: 0  // A对应索引0
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，分解对象编组将会()。",
+                question: "在 AutoCAD 中，分解对象编组将会()。",
                 options: ["删除编组和编组中的成员", "编组的名字仍在", "使编组消失,编组中的成员仍然存在", "仅删除编组中的成员,编组仍然存在"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
@@ -445,21 +581,21 @@
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，F12临时替代健的作用是()。",
-                options: ["打开/关闭文本窗口", "切换\"极轴追踪\"", "切换\"对象捕捉追踪\"", "切换\"动态输入\""],
+                question: "在 AutoCAD 中，F12 临时替代健的作用是()。",
+                options: ["打开/关闭文本窗口", "切换\"极轴追踪\"", "切换\"对象捕捉追踪", "切换\"动态输入\""],
                 answer: "D",
                 originalAnswer: 3  // D对应索引3
             },
             {
                 type: "单选题",
-                question: "AutoCAD中，在标准检查报告中，下面哪项内容能被列出来？",
+                question: "AutoCAD 中，在标准检查报告中，下面哪项内容能被列出来？",
                 options: ["用于检查的插入模块", "每个图形文件中发现的问题", "每个图形文件中被忽略的问题", "以上皆可在检查报告中被列出来"],
                 answer: "D",
                 originalAnswer: 3  // D对应索引3
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以在不分解标注的情况下，取消一个标注与对象之间的关联性？",
+                question: "在 AutoCAD 中，以下哪个命令可以在不分解标注的情况下，取消一个标注与对象之间的关联性？",
                 options: ["dimdisassoc", "disdimassoc", "dimdisassociate", "disdimassociate"],
                 answer: "D",
                 originalAnswer: 3  // D对应索引3
@@ -473,14 +609,14 @@
             },
             {
                 type: "单选题",
-                question: "用LINE命令画出一个矩形，该矩形中有多少个图元实体？",
-                options: ["1个", "4个", "5个", "不确定"],
+                question: "用 LINE 命令画出一个矩形，该矩形中有多少个图元实体？",
+                options: ["1 个", "4 个", "5 个", "不确定"],
                 answer: "B",
                 originalAnswer: 1  // B对应索引1
             },
             {
                 type: "单选题",
-                question: "用旋转命令\"rotate\"旋转对象时，正确的是()。",
+                question: "用旋转命令“rotate”旋转对象时，正确的是()。",
                 options: ["必须指定旋转角度", "必须指定旋转基点", "必须使用参考方式", "可以在三维空间绕任意轴旋转对象"],
                 answer: "B",
                 originalAnswer: 1  // B对应索引1
@@ -494,64 +630,64 @@
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，编辑多段线时，使用光滑曲线来近似选定的多段线，应该选用()。",
+                question: "在 AutoCAD 中，编辑多段线时，使用光滑曲线来近似选定的多段线，应该选用()。",
                 options: ["[拟合(F)]选项", "[样条曲线(S)]选项", "[非曲线化(D)]选项", "[线型生成(L)]选项"],
                 answer: "B",
                 originalAnswer: 1  // B对应索引1
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，应用对象追踪时，除了按下对象追踪按键外，还需要按下状态条上的哪个按键？",
+                question: "在 AutoCAD 中，应用对象追踪时，除了按下对象追踪按键外，还需要按下状态条上的哪个按键？",
                 options: ["对象捕捉", "正交", "极轴", "捕捉"],
                 answer: "A",
                 originalAnswer: 0  // A对应索引0
             },
             {
                 type: "单选题",
-                question: "在CAD中在用line绘制封闭图形时，最后一直线可以输入()字母后回车自动封闭。",
+                question: "在 CAD 中在用 line 绘制封闭图形时，最后一直线可以输入()字母后回车自动封闭。",
                 options: ["C", "D", "G", "O"],
                 answer: "A",
                 originalAnswer: 0  // A对应索引0
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，保存和共享工具选项板时()。",
-                options: ["工具选项板组中\"动态块\"部分内容是不可以移到\"样例\"部分的", "如果工具选项板文件设置了只读属性,工具选项板下方将显示锁定图标", "可以在AutoCAD 2005中使用在AutoCAD 2006中创建的工具选项板", "工具选项板文件的默认路径不能改变"],
+                question: "在 AutoCAD 中，保存和共享工具选项板时()。",
+                options: ["工具选项板组中\"动态块\"部分内容是不可以移到\"样例\"部分的", "如果工具选项板文件设置了只读属性,工具选项板下方将显示锁定图标", "可以在 AutoCAD 2005 中使用在 AutoCAD 2006 中创建的工具选项板", "工具选项板文件的默认路径不能改变"],
                 answer: "B",
                 originalAnswer: 1  // B对应索引1
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，在工具栏右健，出现的快捷菜单不可以是()。",
+                question: "在 AutoCAD 中，在工具栏右健，出现的快捷菜单不可以是()。",
                 options: ["开关每个工具栏", "自定义工具栏", "拖动工具栏", "锁定工具栏"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中执行()命令时，空格键与[Enter]键的功效不同。",
+                question: "在 AutoCAD 中执行()命令时，空格键与[Enter]键的功效不同。",
                 options: ["直线", "单行文字", "修剪", "分解"],
                 answer: "B",
                 originalAnswer: 1  // B对应索引1
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，工作移动图形时，可利用以下哪种方式实现？",
-                options: ["利用ctrl+p键", "利用shifl+p键", "按住鼠标中键拖动", "滚动鼠标中键移动"],
+                question: "在 AutoCAD 中，工作移动图形时，可利用以下哪种方式实现？",
+                options: ["利用 ctrl+p 键", "利用 shifl+p 键", "按住鼠标中键拖动", "滚动鼠标中键移动"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，下面哪项是正确的制作属性块操作过程？",
-                options: ["画好图形→使用Attdef命令定义属性→使用Wblock制成整体块", "画好图形→使用Attedit命令定义属性→使用WBlock制成整体块", "画好图形→使用Attedit命令定义属性→使用BbloCk制成整体块", "以上都不是"],
+                question: "在 AutoCAD 中，下面哪项是正确的制作属性块操作过程？",
+                options: ["画好图形→使用 Attdef 命令定义属性→使用 Wblock 制成整体块", "画好图形→使用 Attedit 命令定义属性→使用 WBlock 制成整体块", "画好图形→使用 Attedit 命令定义属性→使用 BbloCk 制成整体块", "以上都不是"],
                 answer: "A",
                 originalAnswer: 0  // A对应索引0
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，以下哪类对象不可以被镜像？",
-                options: ["用擦除(Wipeout)命令创建的对象", "MIRRTEXT设置为0时的多行文字", "选择性粘贴中以\"Microsoft Excel\"方式粘贴的电子表格文件", "节点"],
+                question: "在 AutoCAD 中，以下哪类对象不可以被镜像？",
+                options: ["用擦除(Wipeout)命令创建的对象", "MIRRTEXT 设置为 0 时的多行文字", "选择性粘贴中以\"Microsoft Excel\"方式粘贴的电子表格文件", "节点"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
@@ -592,7 +728,7 @@
             },
             {
                 type: "单选题",
-                question: "AutoCAD 中，在\"发布\"对话框中创建图纸列表后，可以将图形发布到()。",
+                question: "AutoCAD 中，在“发布”对话框中创建图纸列表后，可以将图形发布到()。",
                 options: ["每个图纸选项卡设置中的指定绘图仪", "单个的多页 DWF 文件", "多个单页 DWF 文件", "以上都可以"],
                 answer: "D",
                 originalAnswer: 3  // D对应索引3
@@ -670,986 +806,860 @@
             {
                 type: "单选题",
                 question: "在 AutoCAD 中，下列说法中正确的是()。",
-                options: ["被关闭的图层不再显示在屏幕上,不能被编辑,但能打印输出", "被冻结的图层仍然显示在屏幕上,但不能被编辑,不能打印输出", "被冻结的图层不显示,不参与重生成", "被锁定的图层不显示,但可以编辑"],
+                options: ["被关闭的图层不再显示在屏幕上,不能被编辑,但能打印输出", "被冻结的图层仍然显示在屏幕上,但不能被编辑,不能打印输出", "被锁定的图层仍然显示在屏幕上,但不能编辑,却可以打印输出", "以上说法都是错误的"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "AutoCAD 中,被()图层上的对象不能被编辑。",
-                options: ["关闭", "冻结", "锁定", "打开"],
+                question: "在 AutoCAD 中，已知两条异面直线，直线 1 过（20.3，0，53.1）和（38.2，40，31.5）两点，直线 2 过（24.1，81.6，0）和（86.2，37.9，- 76.4）两点，则两条异面直线的公垂线长度（两异面直线的最短距离）是()。",
+                options: ["31.0554", "31.0555", "31.0556", "31.0557"],
+                answer: "B",
+                originalAnswer: 1  // B对应索引1
+            },
+            {
+                type: "单选题",
+                question: "按现行螺纹标准，特征代号 G 表示的螺纹，其名称是()。",
+                options: ["圆柱管螺纹", "55°非密封管螺纹", "非螺纹密封的管螺纹"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "在 AutoCAD 中，以下哪个对象不能用 BREAK 命令打断？",
-                options: ["圆", "直线", "多段线", "圆弧"],
+                question: "一对标准圆柱齿轮传动，已知 z1=20，z2=50, 它们的齿形系数是 YFa1>YFa2，则它们的齿根弯曲应力σF 与齿面接触应力σH 的关系是：()。",
+                options: ["sF1>sF2,sH1>sH2", "sF1>sF2,sH1=sH2", "sF1<sF2,sH1=sH2", "sF1<sF2,sH1>sH2"],
+                answer: "B",
+                originalAnswer: 1  // B对应索引1
+            },
+            {
+                type: "单选题",
+                question: "在 AutoCAD 命令输入方式中以下不可采用的方式有()。",
+                options: ["点取命令图标", "在菜单栏点取命令", "用键盘直接输入", "利用数字键输入"],
+                answer: "D",
+                originalAnswer: 3  // D对应索引3
+            },
+            {
+                type: "单选题",
+                question: "AutoCAD 中，下面关于选取对象的说法正确的是()。",
+                options: ["直接单击所要选取的对象", "在选取对象时先确定左上角,再向右下角拖动,框在选择框内的对象被选中", "交叉选取对象时先确定右上角,再向右下角拖动,框在选择框内的对象被选中", "多边形选取对象的方法是单击移动+按钮,命令行内输入 WP,然后确定选择范围"],
+                answer: "A",
+                originalAnswer: 0  // A对应索引0
+            },
+            {
+                type: "单选题",
+                question: "在 AutoCAD 中，执行 OPEN，没出现对话框，提示在命令行中直接键入文件名，是()。",
+                options: ["CMDDIA=0", "FILEDIA=0", "OPENDIA=0", "禁用 Startup(启动)对话框"],
+                answer: "B",
+                originalAnswer: 1  // B对应索引1
+            },
+            {
+                type: "单选题",
+                question: "在 AutoCAD 中，在极轴追踪中新建一个 15°的增量角、一个 5°的附加角，则以下叙述正确的是()。",
+                options: ["可以直接沿着 10°方向绘制一条直线", "可以直接沿着-10°方向绘制一条直线", "可以直接沿着-5°方向绘制一条直线", "可以直接沿着-15°方向绘制一条直线"],
+                answer: "D",
+                originalAnswer: 3  // D对应索引3
+            },
+            {
+                type: "单选题",
+                question: "AutoCAD 中，设置点样式时可以()。",
+                options: ["选择【格式】【点样式】命令", "右击鼠标,在弹出的快捷菜单中单击【点样式】命令", "选取该项点后,在其对应的【特性】对话框中进行设置", "单击【图案填充】按钮"],
+                answer: "A",
+                originalAnswer: 0  // A对应索引0
+            },
+            {
+                type: "单选题",
+                question: "采用螺纹链接时，若被连接件之一厚度较大，且材料较软，强度较低，需要经常装拆，则一般宜采用()。",
+                options: ["螺栓连接", "双头螺柱连接", "螺钉连接"],
+                answer: "B",
+                originalAnswer: 1  // B对应索引1
+            },
+            {
+                type: "单选题",
+                question: "AutoCAD 缺省的自动存盘时间为()。",
+                options: ["15 分钟", "30 分钟", "60 分钟", "10 分钟"],
+                answer: "D",
+                originalAnswer: 3  // D对应索引3
+            },
+            {
+                type: "单选题",
+                question: "AutoCAD 中，“C”是()命令的命令别名。",
+                options: ["COP", "CHAMFER", "SCALE", "CIRCLE"],
+                answer: "D",
+                originalAnswer: 3  // D对应索引3
+            },
+            {
+                type: "单选题",
+                question: "在 Auto cad 中，标注±0.00 应输入()。",
+                options: ["%%C 0.00", "%%P 0.00", "%%D 0.00", "%%R 0.00"],
+                answer: "B",
+                originalAnswer: 1  // B对应索引1
+            },
+            {
+                type: "单选题",
+                question: "在 AutoCAD 中，系统默认的画圆弧方式是()。",
+                options: ["顺时针", "逆时针", "自定义", "随机"],
+                answer: "B",
+                originalAnswer: 1  // B对应索引1
+            },
+            {
+                type: "单选题",
+                question: "在润滑良好的条件下，为提高蜗杆传动的啮合效率，可采用的方法为()。",
+                options: ["减小齿面滑动速度", "减小蜗杆头数 Z1", "增加蜗杆头数 Z1", "增大蜗杆直径系数 q"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "AutoCAD 默认的自动存盘时间是()。",
-                options: ["5 分钟", "10 分钟", "15 分钟", "20 分钟"],
+                question: "在 AutoCAD 中，绘制直线时，可以使用以下()快捷输入方式。",
+                options: ["C", "L", "Pan", "E"],
                 answer: "B",
                 originalAnswer: 1  // B对应索引1
             },
             {
                 type: "单选题",
-                question: "AutoCAD 中,在命令行输入\"(-PLOT)\"的前面的\"-\"号的作用是()。",
-                options: ["使 PLOT 命令在命令行进行，而不是在对话框中进行", "使 PLOT 命令反向进行", "没有实际意义", "使 PLOT 命令只能打印黑白图形"],
+                question: "AutoCAD 中，不能应用修剪命令“trim”进行修剪的对象是()。",
+                options: ["圆弧", "圆", "直线", "文字"],
+                answer: "D",
+                originalAnswer: 3  // D对应索引3
+            },
+            {
+                type: "单选题",
+                question: "对于已经加密的图形文件，第一次打开需要验证密码，关闭后不退出 AutoCAD 系统，再次打开()。",
+                options: ["仍然需要验证密码,才可打开", "不需要验证密码,系统自动打开", "由系统变量控制,不确定", "以上选项都不正确"],
                 answer: "A",
                 originalAnswer: 0  // A对应索引0
             },
             {
                 type: "单选题",
-                question: "在 AutoCAD 中，以下关于面域说法错误的是()。",
-                options: ["面域是由闭合边界形成的二维封闭区域", "面域可以重叠", "面域可以进行布尔运算", "面域具有物理特性，如质心、惯性等"],
+                question: "在 Autocad 中，EXPLODE 命令对()图形无效。",
+                options: ["多线段", "外部参照", "图块", "正多边形"],
                 answer: "B",
                 originalAnswer: 1  // B对应索引1
             },
             {
                 type: "单选题",
-                question: "在 AutoCAD 中，执行合并命令时，以下哪个是不能合并的？",
-                options: ["圆弧和圆弧", "直线和多段线", "多段线和样条曲线", "圆弧和直线"],
+                question: "在 AutoCAD 中，以下哪项不属于“格式刷”可以复制的特性？",
+                options: ["布局中视口的自定义比例", "具有不同宽度的多段线的线宽", "图案填充的线型", "对象的可打印性"],
+                answer: "B",
+                originalAnswer: 1  // B对应索引1
+            },
+            {
+                type: "单选题",
+                question: "应用圆角命令“fillet”对一条多段线进行圆角操作，正确的是()。",
+                options: ["可以一次指定不同圆角半径", "如果一条弧线段隔开两条相交的直线段,将删除该弧线段并用指定半径的圆角替代", "圆角半径不能为 0", "圆角半径可以任意指定"],
+                answer: "B",
+                originalAnswer: 1  // B对应索引1
+            },
+            {
+                type: "单选题",
+                question: "在 AutoCAD 中，以下关于实体编辑工具栏的叙述中正确的是()。",
+                options: ["\"拉伸面\"只能对实体的某个平的表面进行操作。", "\"复制面\"只能对实体的某个平的表面进行操作。", "\"移动面\"只能对实体的某个平的表面进行操作。", "\"倾斜面\"只能对实体的某个平的表面进行操作。"],
+                answer: "A",
+                originalAnswer: 0  // A对应索引0
+            },
+            {
+                type: "单选题",
+                question: "AutoCAD 中，用偏移命令“offset”偏移对象时()。",
+                options: ["必须指定偏移距离", "不可以指定偏移通过特殊点", "不可以偏移开口曲线和封闭线框", "原对象的某些特征可能在偏移后消失"],
+                answer: "D",
+                originalAnswer: 3  // D对应索引3
+            },
+            {
+                type: "单选题",
+                question: "AutoCAD 中,若标注尺寸的公差是±0.0，则在【标注样式】对话框的\"公差\"选项卡中，将公差的方式设置为()。",
+                options: ["极限偏差", "对称", "极限尺寸", "基本尺寸"],
+                answer: "B",
+                originalAnswer: 1  // B对应索引1
+            },
+            {
+                type: "单选题",
+                question: "AutoCAD 中，用复制命令\"copy\"复制对象时，不可以()。",
+                options: ["原地复制对象", "同时复制多个对象", "一次把对象复制到多个位置", "复制对象到其他图层"],
+                answer: "D",
+                originalAnswer: 3  // D对应索引3
+            },
+            {
+                type: "单选题",
+                question: "在 AutoCAD 中，模型空间中有一条构造线，对象线型为\"dashed\"，但无论怎样缩放，都体现不出该对象为虚线，可能是因为以下哪个原因造成的？",
+                options: ["构造线不能够设置线型,改为直线即可", "着色模式改为\"二维线框\"", "全局线型比例因子太大或太小", "对象的线型只有在图层中设置才有效"],
+                answer: "B",
+                originalAnswer: 1  // B对应索引1
+            },
+            {
+                type: "单选题",
+                question: "V 带在减速传动过程中，带的最大应力发生在()。",
+                options: ["V 带离开大带轮处", "V 带绕上大带轮处", "V 带离开小带轮处", "V 带绕上小带轮处"],
+                answer: "D",
+                originalAnswer: 3  // D对应索引3
+            },
+            {
+                type: "单选题",
+                question: "在 AutoCAD 中，对视口的使用来讲，下列哪个描述是正确的？",
+                options: ["在模型空间中,可以同时激活多个视口", "在图纸空间中,没有当前视口,每个视口都可以看作一个对象", "在一个布局中,只能创建一个浮动视口", "浮动视口和平铺视口均可以出现在模型空间中"],
+                answer: "D",
+                originalAnswer: 3  // D对应索引3
+            },
+            {
+                type: "单选题",
+                question: "带属性的块经分解后，属性显示为()。",
+                options: ["属性值", "标记", "提示", "不显示"],
+                answer: "B",
+                originalAnswer: 1  // B对应索引1
+            },
+            {
+                type: "单选题",
+                question: "在 AutoCAD 中，对 wipeout 命令描述不正确的是()。",
+                options: ["它并没有把在它下面的对象修剪掉,仅仅只是\"遮住\"了", "用选择多段线的方式生成光栅图像,仅仅在原对象之上加了一层光栅图像,并没有改变原对象", "可以改变所生成的光栅图像的透明度", "用过 wipeout 之后,想恢复到没用之前的情况,只能另寻它途,wipeout 不提供删除自己所生成的光栅图像的选项"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "以下哪种滚动轴承能够同时承受径向载荷和轴向载荷？",
-                options: ["深沟球轴承", "角接触球轴承", "推力球轴承", "圆柱滚子轴承"],
+                question: "在 AutoCAD 中，鼠标中键可以执行两种操作，一种是实时平移，一种是弹出对象捕捉菜单，可以通过以下哪个系统变量切换两种功能？",
+                options: ["Zoomfactor", "Mbuttonpan", "Blipmode", "Apbox"],
                 answer: "B",
                 originalAnswer: 1  // B对应索引1
             },
             {
                 type: "单选题",
-                question: "AutoCAD 中，用于控制关联标注的系统变量是()。",
-                options: ["DIMASSOC=0", "DIMASSOC=2", "DIMASSOC=1", "DIMASSOC=3"],
-                answer: "B",
-                originalAnswer: 1  // B对应索引1
-            },
-            {
-                type: "单选题",
-                question: "在 CAD 中绘制水平线或垂直线时，可用()命令设置。",
-                options: ["LAYER", "GRID", "SNAP", "ORTHO"],
-                answer: "D",
-                originalAnswer: 3  // D对应索引3
-            },
-            {
-                type: "单选题",
-                question: "AutoCAD 中，在创建面域时，以下哪种情况不能创建面域？",
-                options: ["闭合多段线", "闭合样条曲线", "相交的直线", "圆"],
+                question: "在 AutoCAD 中，图纸空间中坐标显示的形状是()。",
+                options: ["两个互相垂直的箭头", "世界坐标系统", "一个三角形", "三维坐标系"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "在 AutoCAD 中,使用\"STRETCH\"命令编辑图形时,必须用()方式选择要拉伸的对象。",
-                options: ["窗口选择", "交叉选择", "点选", "全部选择"],
-                answer: "B",
-                originalAnswer: 1  // B对应索引1
-            },
-            {
-                type: "单选题",
-                question: "在 AutoCAD 中，对于已标注好的尺寸，要修改文字内容，以下哪种方法不能实现？",
-                options: ["使用 DDEDIT 命令", "双击尺寸文字", "使用\"特性\"选项板", "用鼠标拖动尺寸线"],
+                question: "在 AutoCAD 中，关于\"视口\"工具栏中的比例列表以下说法错误的是()。",
+                options: ["列表中的比例可以添加", "列表中的比例可以删除", "列表中的比例可以调整顺序", "不能改变类别中比例的显示如将\" 1 : 10 \"改为\" 1 比 10 \""],
                 answer: "D",
                 originalAnswer: 3  // D对应索引3
             },
             {
                 type: "单选题",
-                question: "齿轮传动中，齿面接触疲劳强度计算时，通常以()作为计算点。",
-                options: ["节点", "齿顶", "齿根", "齿廓中点"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
+                question: "在 AutoCAD 中，下面哪个对象不可以分解？",
+                options: ["文字", "块", "图案", "尺寸"],
+                answer: "D",
+                originalAnswer: 3  // D对应索引3
             },
             {
                 type: "单选题",
-                question: "AutoCAD 中，使用 DIVIDE 命令定数等分对象，系统默认的节点形式是一个小十字。要改变该节点的形式可使用()命令。",
-                options: ["POINT", "DDPTYPE", "PTYPE", "SETPT"],
-                answer: "B",
-                originalAnswer: 1  // B对应索引1
-            },
-            {
-                type: "单选题",
-                question: "打开正交模式的功能键是()。",
-                options: ["F2", "F5", "F8", "F9"],
+                question: "根据装配图的作用，应标注的尺寸有规格性能尺寸、装配尺寸、安装尺寸、()和其它重要尺寸。",
+                options: ["配合尺寸", "零件的定形尺寸", "外形总体尺寸", "零件之间定位尺寸"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "以下哪项不属于 AutoCAD 的基本选择方法？",
-                options: ["投影选择", "窗口选择", "交叉窗口选择", "快速选择"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "AutoCAD 中，以下关于动态输入的叙述中错误的是()。",
-                options: ["动态输入可以在指针位置显示命令提示和输入框", "F12 功能键用于打开/关闭动态输入", "动态输入只能输入点的坐标，不能输入命令", "可以在草图设置中设置动态输入的选项"],
+                question: "在 AutoCAD 中，不能选中已经设定的组，以下哪种原因不可能？",
+                options: ["在\"对象编组\"对话框中,组的可选择性为否。", "不小心按了 SHIFT+CTRL+A。", "该组为未命名的组,例如*A1、*A2 等等。", "在\"选项\"对话框的\"选择\"选项卡下进行了某种设置。"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "在 AutoCAD 中，使用 EXPLODE 命令不能分解以下哪种对象？",
-                options: ["图块", "面域", "多行文字", "多段线"],
-                answer: "D",
-                originalAnswer: 3  // D对应索引3
-            },
-            {
-                type: "单选题",
-                question: "在 AutoCAD 中，关于对象捕捉，以下说法正确的是()。",
-                options: ["对象捕捉模式只能通过状态栏按钮设置", "对象捕捉模式可以通过设置系统变量设置", "对象捕捉模式不能临时覆盖", "对象捕捉模式只能捕捉端点、中点和交点"],
-                answer: "B",
-                originalAnswer: 1  // B对应索引1
-            },
-            {
-                type: "单选题",
-                question: "AutoCAD 中，将一个非标准的图形单位转换为标准图形单位，可使用的命令是()。",
-                options: ["UNITS", "SCALE", "CONVERT", "-DWGUNITS"],
-                answer: "D",
-                originalAnswer: 3  // D对应索引3
-            },
-            {
-                type: "单选题",
-                question: "AutoCAD 中，用 PEDIT 命令不能完成的操作是()。",
-                options: ["闭合多段线", "将样条曲线转换为多段线", "合并多段线", "拟合多段线生成曲线"],
-                answer: "B",
-                originalAnswer: 1  // B对应索引1
-            },
-            {
-                type: "单选题",
-                question: "AutoCAD 中，使用夹点编辑时，按住什么键可以实现复制功能？",
-                options: ["Ctrl", "Alt", "Shift", "Tab"],
+                question: "连接用的螺纹，必须满足()条件。",
+                options: ["不自锁", "传力", "自锁", "传递扭矩"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "关于 AutoCAD 中的表格，以下说法错误的是()。",
-                options: ["可以将 Excel 表格复制到 AutoCAD 中", "AutoCAD 中的表格不能拆分单元格", "可以在表格中插入块", "可以设置表格样式"],
-                answer: "B",
-                originalAnswer: 1  // B对应索引1
-            },
-            {
-                type: "单选题",
-                question: "在 AutoCAD 中，执行\"拉长\"命令时，不能拉长以下哪种对象？",
-                options: ["直线", "多段线", "圆弧", "开口样条曲线"],
-                answer: "B",
-                originalAnswer: 1  // B对应索引1
-            },
-            {
-                type: "单选题",
-                question: "AutoCAD 中，使用\"格式刷\"复制源对象的线宽，其目标对象不可以是()。",
-                options: ["直线", "多段线", "圆", "三维多段线"],
-                answer: "D",
-                originalAnswer: 3  // D对应索引3
-            },
-            {
-                type: "单选题",
-                question: "在 AutoCAD2008 版本中，提供了多种工作空间，以下哪个不是 AutoCAD2008 中默认的工作空间？",
-                options: ["AutoCAD 经典", "二维草图与注释", "三维建模", "三维基础"],
+                question: "弹簧所常用的材料为()。",
+                options: ["45 钢", "铸铁", "60 锰", "铸钢"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "在 AutoCAD 中，以下关于多线的说法中错误的是()。",
-                options: ["多线是多条平行直线的组合，每条线的颜色和线型必须相同", "默认情况下，多线的对正方式是无", "可以使用多线样式管理器创建和修改多线样式", "在编辑多线时，可以修改多线的交点，修改多线的顶点，剪切或缝合多线"],
+                question: "同一螺栓组的螺栓即使受力不同，一般采用相同材料和尺寸，其原因是()。",
+                options: ["便于装配", "为了形象美观", "使结合面受力均匀", "减小磨损"],
                 answer: "A",
                 originalAnswer: 0  // A对应索引0
             },
             {
                 type: "单选题",
-                question: "AutoCAD 中，以下关于块的说法正确的是()。",
-                options: ["块只能在创建它的图形中使用", "块可以包含属性", "块不能被分解", "块中的对象不能有自己的图层"],
-                answer: "B",
-                originalAnswer: 1  // B对应索引1
+                question: "在 AutoCAD 的键盘功能键定义中，\"栅格显示\"的开关是()键。",
+                options: ["F2", "F4", "F6", "F7"],
+                answer: "D",
+                originalAnswer: 3  // D对应索引3
             },
             {
                 type: "单选题",
-                question: "在 AutoCAD 中，创建命名打印样式表，应选择扩展名为()的文件。",
-                options: [".ctb", ".stb", ".pcp", ".pmp"],
-                answer: "B",
-                originalAnswer: 1  // B对应索引1
+                question: "满足()是机械设计首要的要求。",
+                options: ["预期功能要求", "工艺性要求", "安全性和可靠性要求", "操作和维修方便要求"],
+                answer: "A",
+                originalAnswer: 0  // A对应索引0
             },
             {
                 type: "单选题",
-                question: "在 AutoCAD 中，使用\"视图\"命令保存的视图不包含以下哪项信息？",
-                options: ["视图方向", "缩放比例", "图层状态", "视图中心点"],
+                question: "在 AutoCAD 中，以下对坐标系的描述错误的是()。",
+                options: ["坐标系分为世界坐标系和用户坐标系", "世界坐标系绝对不可能改变。", "用户坐标系可随时改变", "世界坐标系和用户坐标系只能存在一个"],
+                answer: "D",
+                originalAnswer: 3  // D对应索引3
+            },
+            {
+                type: "单选题",
+                question: "AutoCAD 中，EXPLODE 命令对()图形实体无效。",
+                options: ["多义线", "正多边形", "圆", "尺寸标注"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "在 AutoCAD 中，使用\"打断\"命令时，如果要将一个对象在一点处断开，应该输入的第二打断点是()。",
-                options: ["指定第二个打断点", "输入\"F\"", "输入\"@\"", "按 Enter 键"],
+                question: "平面连杆机构的急回特性可以缩短()，提高生产效率。",
+                options: ["非生产时间", "生产时间", "非工作时间", "工作时间"],
+                answer: "A",
+                originalAnswer: 0  // A对应索引0
+            },
+            {
+                type: "单选题",
+                question: "AutoCAD 中,ddedit 是对尺寸标注中的()进行编辑。",
+                options: ["尺寸标注格式", "尺寸文本", "尺寸箭头", "尺寸文本在尺寸线上的位置"],
+                answer: "B",
+                originalAnswer: 1  // B对应索引1
+            },
+            {
+                type: "单选题",
+                question: "在 AutoCAD 中，从工具选项板中的\"机械\"页面中拖动图形时，如果将它们拖动到当前图形中，那么被拖动的图形将作为什么被插入？",
+                options: ["外部参照", "光栅图像", "几何对象", "块"],
+                answer: "D",
+                originalAnswer: 3  // D对应索引3
+            },
+            {
+                type: "单选题",
+                question: "在 AutoCAD 中，自定义工具选项板的命令是()。",
+                options: ["CUSTOMIZE", "T00LPALETTES", "UNDEFLIN", "TOOLTIPS"],
+                answer: "A",
+                originalAnswer: 0  // A对应索引0
+            },
+            {
+                type: "单选题",
+                question: "在 AutoCAD 中，要画出一条有宽度且各线段均属同一对象的线，要使用()命令。",
+                options: ["Line", "MLine", "Xline", "Pline"],
+                answer: "D",
+                originalAnswer: 3  // D对应索引3
+            },
+            {
+                type: "单选题",
+                question: "AutoCAD 插入块之前，必须先()。",
+                options: ["确定块的插入点", "确定块名", "选择块对象", "确定块位置"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "在 AutoCAD 中，\"DIM\"命令前缀表示()。",
-                options: ["绘图命令", "尺寸标注命令", "修改命令", "查询命令"],
+                question: "AutoCAD 中，在创建和编辑命令时，可以向命令添加按钮图像的信息，按钮图像将被保存为()。",
+                options: ["* . JPG", "* . BMP", "* . PNG", "* . TIF"],
                 answer: "B",
                 originalAnswer: 1  // B对应索引1
             },
             {
                 type: "单选题",
-                question: "在 AutoCAD 中，使用\"多行文字\"命令创建文字时，以下说法错误的是()。",
-                options: ["可以设置文字高度", "可以设置文字样式", "可以设置文字宽度", "不能包含特殊字符"],
+                question: "一斜齿圆柱齿轮传动，已知法向模数 Mn＝4mm，齿数 Z1=20，螺旋角β＝14°32'2”，齿宽 b1＝80，b2＝75mm，则该传动的齿宽系数φd 等于()。",
+                options: ["0.852", "0.907", "0.88", "0.8"],
+                answer: "B",
+                originalAnswer: 1  // B对应索引1
+            },
+            {
+                type: "单选题",
+                question: "在 AutoCAD 中，如果丢失了许可证传输文件或传输代码，以下说法正确的是()。",
+                options: ["两台计算机将都不能运行 AutoCAD", "在宽限阶段内,源计算机还可以运行 AutoCAD ,过了宽限阶段将永远不能运行 AutoCAD", "只有重新安装 AutoCAD", "可以在源计算机上重新输出许可证"],
                 answer: "D",
                 originalAnswer: 3  // D对应索引3
             },
             {
                 type: "单选题",
-                question: "在 AutoCAD 中，要显示所有对象，包括那些可能绘制在屏幕外的对象，应该使用哪个缩放选项？",
-                options: ["全部", "范围", "窗口", "对象"],
-                answer: "B",
-                originalAnswer: 1  // B对应索引1
-            },
-            {
-                type: "单选题",
-                question: "在 AutoCAD 中，要删除图形中多余的、重复的、部分重叠的对象，应使用什么命令？",
-                options: ["OVERKILL", "PURGE", "ERASE", "TRIM"],
+                question: "在 AutoCAD 中，关闭\"图形修复管理器\"的命令是()。",
+                options: ["drawingrecoverhide", "drawingrecoverclose", "drawingaudithide", "drawingauditclose"],
                 answer: "A",
                 originalAnswer: 0  // A对应索引0
             },
             {
                 type: "单选题",
-                question: "AutoCAD 中，系统默认的\"最近点\"对象捕捉模式的标记是()。",
-                options: ["绿色三角形", "绿色方框", "绿色圆圈", "绿色叉号"],
+                question: "在 AutoCAD 中，使用\"定数等分\"命令将下列对象五等分，在哪个对象上产生的点最多？",
+                options: ["直线", "圆", "圆弧", "三维样条曲线"],
                 answer: "B",
                 originalAnswer: 1  // B对应索引1
             },
             {
                 type: "单选题",
-                question: "在 AutoCAD 中，以下关于\"夹点\"编辑的说法中错误的是()。",
-                options: ["拉伸多段线上的夹点会改变多段线的宽度", "拉伸圆上的夹点会变成椭圆", "拉伸矩形的角点夹点会保持矩形形状", "拉伸多段线的顶点夹点会改变多段线的形状"],
+                question: "AutoCAD 软件不能用来进行()。",
+                options: ["文字处理", "服装设计", "电路设计", "零件设计"],
                 answer: "A",
                 originalAnswer: 0  // A对应索引0
             },
             {
                 type: "单选题",
-                question: "在 AutoCAD 中，使用\"视口\"命令在模型空间创建多个视口后，以下说法正确的是()。",
-                options: ["每个视口必须显示相同的图形范围", "只能有一个视口处于激活状态", "可以在不同视口中设置不同的UCS", "视口边界只能是矩形"],
+                question: "对于标准齿轮传动，影响齿形系数 Y 的主要几何参数是()。",
+                options: ["齿轮的模数", "齿轮的压力角", "齿轮的齿数", "齿轮的顶隙系数"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "在 AutoCAD 中，对实体进行\"抽壳\"操作时，如果删除面的集合不包括所有相邻面，实体将()。",
-                options: ["无法抽壳", "变成一个带壁厚的壳体", "变成一个封闭的实体", "被分解为多个实体"],
+                question: "轴上零件轮毂宽度应()与之相配合的轴段的轴向尺寸。",
+                options: ["等于", "大于", "小于", "远远小于"],
                 answer: "B",
                 originalAnswer: 1  // B对应索引1
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，以下关于OLE对象的说法错误的是()。",
-                options: ["OLE对象可以是来自其他应用程序的内容", "OLE对象在AutoCAD中可以双击编辑", "OLE对象在AutoCAD中不能进行常规的编辑操作", "OLE对象可以被分解"],
-                answer: "D",
-                originalAnswer: 3  // D对应索引3
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，用于设置标注样式的命令是()。",
-                options: ["DIMSTYLE", "STYLE", "TEXTSTYLE", "DIM"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "AutoCAD中，绘制正多边形时选择\"Edge\"选项的含义是()。",
-                options: ["通过指定边的两个端点来绘制", "通过指定中心点和一个顶点来绘制", "通过指定半径来绘制", "通过指定内切圆半径来绘制"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，要显示所有已加载的线型，应该执行()。",
-                options: ["-LINETYPE命令，然后输入L", "LINETYPE命令，然后点击\"加载\"按钮", "LT命令，然后选择\"显示所有\"", "线型管理器中点击\"显示细节\""],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "AutoCAD中，使用\"快速计算器\"时，要计算两点之间的距离，应该选择()。",
-                options: ["点(坐标)计算器", "向量计算器", "表达式计算器", "单位转换"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，使用\"快速选择\"功能时，以下哪个选项是不能用于过滤对象的()。",
-                options: ["图层", "颜色", "线宽", "创建时间"],
-                answer: "D",
-                originalAnswer: 3  // D对应索引3
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，创建三维实体时，以下哪种方法不是创建实体的方法()。",
-                options: ["拉伸", "旋转", "放样", "修剪"],
-                answer: "D",
-                originalAnswer: 3  // D对应索引3
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，使用\"对齐\"命令(ALIGN)时，至少需要指定()对源点和目标点。",
-                options: ["1", "2", "3", "4"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "AutoCAD中，要显示对象的属性，应该使用()命令。",
-                options: ["LIST", "PROPERTIES", "ID", "TIME"],
+                question: "在 AutoCAD 中，以下关于\"Revolve\"命令的叙述正确的是()。",
+                options: ["截面轮廓线可以是一个或多个不闭合的对象。", "截面轮廓与旋转轴可以不共面。", "截面轮廓可以跨越旋转轴的两侧。", "旋转轴一定要是一条实际存在的直线。"],
                 answer: "B",
                 originalAnswer: 1  // B对应索引1
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，以下关于打印的说法正确的是()。",
-                options: ["一个布局只能设置一个视口", "模型空间不能打印", "打印样式表只能应用于布局", "可以为不同的对象指定不同的打印样式"],
-                answer: "D",
-                originalAnswer: 3  // D对应索引3
+                question: "在 AutoCAD 中，用 Offset 命令选择对象时一次可以选()对象。",
+                options: ["框选数", "一个", "两个", "任意多个"],
+                answer: "B",
+                originalAnswer: 1  // B对应索引1
             },
             {
                 type: "单选题",
-                question: "AutoCAD中，要将一个图形文件的内容插入到当前图形中，应该使用()命令。",
-                options: ["INSERT", "XREF", "DESIGNCENTER", "PASTE"],
+                question: "在 AutoCAD 中，创建半径为 1.111 元的内接正六边形，定义成块，在插入此块时，X 比例为 0.555，Y 比例为 2.0，两角点之间最长距离为()。",
+                options: ["3.8977", "3.8978", "3.8979", "3.898"],
                 answer: "A",
                 originalAnswer: 0  // A对应索引0
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，以下哪种对象不能被延伸(EXTEND)()。",
-                options: ["直线", "圆弧", "多段线", "圆"],
-                answer: "D",
-                originalAnswer: 3  // D对应索引3
+                question: "在机械图样中，重合断面的轮廓线应采用()。",
+                options: ["粗实线", "细实线", "细虚线", "细双点画线"],
+                answer: "B",
+                originalAnswer: 1  // B对应索引1
             },
             {
                 type: "单选题",
-                question: "AutoCAD中，要创建一个与三个对象都相切的圆，应该选择CIRCLE命令的()选项。",
-                options: ["2P", "3P", "TTR", "相切、相切、相切"],
-                answer: "D",
-                originalAnswer: 3  // D对应索引3
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，使用\"对象追踪\"功能时，需要同时打开()功能。",
-                options: ["对象捕捉", "正交模式", "极轴追踪", "动态输入"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "AutoCAD中，执行\"倒角\"命令(CHAMFER)时，设置距离为0，0，表示()。",
-                options: ["不创建倒角", "创建45度倒角", "将两个对象修剪至交点", "创建圆角"],
+                question: "无论外螺纹或内螺纹，在剖视图或断面图中的剖面线都应画到()。",
+                options: ["细实线", "牙底线", "粗实线", "牙底圆"],
                 answer: "C",
                 originalAnswer: 2  // C对应索引2
             },
             {
                 type: "单选题",
-                question: "在AutoCAD中，以下关于图层特性的说法错误的是()。",
-                options: ["颜色、线型、线宽可以设置为\"随层\"", "打印样式可以设置为\"随层\"", "透明度可以设置为\"随层\"", "厚度可以设置为\"随层\""],
-                answer: "D",
-                originalAnswer: 3  // D对应索引3
-            },
-            {
-                type: "单选题",
-                question: "AutoCAD中，使用\"复制\"命令(COPY)时，如果要多次复制相同距离的对象，应该输入()作为基点。",
-                options: ["第一个复制的起点", "@0,0", "0,0", "上一点"],
-                answer: "B",
-                originalAnswer: 1  // B对应索引1
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，使用\"面域\"命令(REGION)创建面域时，以下哪种情况不能创建面域()。",
-                options: ["由直线组成的闭合图形", "由圆弧组成的闭合图形", "由相交的直线组成的图形", "由多段线组成的闭合图形"],
-                answer: "C",
-                originalAnswer: 2  // C对应索引2
-            },
-            {
-                type: "单选题",
-                question: "AutoCAD中，以下哪个命令用于创建螺旋线()。",
-                options: ["HELIX", "SPIRAL", "TWIST", "COIL"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，使用\"多行文字\"命令(MTEXT)创建文字时，要输入直径符号(ø)，应该输入()。",
-                options: ["%%c", "%%d", "%%o", "%%p"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，要临时覆盖对象捕捉设置，应按住()键。",
-                options: ["Shift", "Ctrl", "Alt", "Tab"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "AutoCAD中，用于控制文字镜像的系统变量是()。",
-                options: ["MIRRTEXT", "TEXTMIRROR", "MTEXTMIRROR", "MIRRORMODE"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，使用\"快速引线\"命令(LEADER)创建引线标注时，以下说法错误的是()。",
-                options: ["可以指定引线的箭头", "可以指定引线的注释内容", "引线只能是直线", "可以为引线添加多个注释"],
-                answer: "C",
-                originalAnswer: 2  // C对应索引2
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪种阵列类型不存在？",
-                options: ["矩形阵列", "环形阵列", "路径阵列", "多边形阵列"],
-                answer: "D",
-                originalAnswer: 3  // D对应索引3
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令不能用于编辑多段线？",
-                options: ["PEDIT", "MLEDIT", "EXPLODE", "JOIN"],
-                answer: "B",
-                originalAnswer: 1  // B对应索引1
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以将二维图形转换为三维实体？",
-                options: ["EXTRUDE", "REVOLVE", "LOFT", "以上都可以"],
-                answer: "D",
-                originalAnswer: 3  // D对应索引3
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个系统变量用于控制多线的默认样式？",
-                options: ["MLSTYLE", "MLSTYLES", "MLINESTYLE", "MLSTY"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令不能用于创建面域？",
-                options: ["REGION", "BO", "BOUNDARY", "POLYGON"],
-                answer: "D",
-                originalAnswer: 3  // D对应索引3
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，使用\"HATCH\"命令填充图案时，以下哪种图案不能使用？",
-                options: ["ANSI图案", "ISO图案", "用户定义图案", "位图图案"],
-                answer: "D",
-                originalAnswer: 3  // D对应索引3
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于测量面积？",
-                options: ["AREA", "MEASURE", "DIST", "LIST"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建带有倒角的矩形？",
-                options: ["RECTANGLE", "POLYGON", "RECTANG", "RECT"],
-                answer: "C",
-                originalAnswer: 2  // C对应索引2
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建带有圆角的矩形？",
-                options: ["RECTANGLE", "POLYGON", "RECTANG", "RECT"],
-                answer: "C",
-                originalAnswer: 2  // C对应索引2
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建椭圆？",
-                options: ["ELLIPSE", "OVAL", "ELLIP", "OVL"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建椭圆弧？",
-                options: ["ELLIPSE", "OVAL", "ELLIP", "OVL"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建点？",
-                options: ["POINT", "DOT", "PT", "MARK"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建构造线？",
-                options: ["XLINE", "CONSTRUCTION", "LINE", "CON"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建射线？",
-                options: ["RAY", "R", "XLINE", "LINE"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建多边形？",
-                options: ["POLYGON", "POLY", "PGON", "P"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建样条曲线？",
-                options: ["SPLINE", "SPL", "CURVE", "SCURVE"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建多段线？",
-                options: ["PLINE", "PL", "POLYLINE", "P"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建多线？",
-                options: ["MLINE", "ML", "MULTILINE", "M"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建云线？",
-                options: ["REVCLOUD", "CLOUD", "RC", "REV"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建修订云线？",
-                options: ["REVCLOUD", "CLOUD", "RC", "REV"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建表格？",
-                options: ["TABLE", "TB", "TBL", "TAB"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建字段？",
-                options: ["FIELD", "FD", "FLD", "F"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建属性？",
-                options: ["ATTDEF", "ATTD", "ATT", "AD"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于编辑属性？",
-                options: ["ATTEDIT", "ATE", "ATT", "AE"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建块？",
-                options: ["BLOCK", "B", "BLK", "CREATEBLOCK"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于插入块？",
-                options: ["INSERT", "I", "INS", "IN"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于分解块？",
-                options: ["EXPLODE", "X", "EXP", "BREAK"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建外部参照？",
-                options: ["XREF", "XR", "X", "ATTACH"],
-                answer: "D",
-                originalAnswer: 3  // D对应索引3
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于绑定外部参照？",
-                options: ["XBIND", "BIND", "X", "B"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建图案填充？",
-                options: ["HATCH", "H", "BHATCH", "BH"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建渐变色填充？",
-                options: ["GRADIENT", "GRAD", "G", "HATCH"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建文字？",
-                options: ["TEXT", "T", "DTEXT", "DT"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建多行文字？",
-                options: ["MTEXT", "MT", "TEXT", "T"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建字段？",
-                options: ["FIELD", "FD", "FLD", "F"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建标注？",
-                options: ["DIM", "D", "DIMENSION", "DM"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建线性标注？",
-                options: ["DIMLINEAR", "DLI", "DIMALIGNED", "DAL"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建对齐标注？",
-                options: ["DIMALIGNED", "DAL", "DIMLINEAR", "DLI"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建角度标注？",
-                options: ["DIMA", "DAN", "DIMANGULAR", "DAG"],
-                answer: "C",
-                originalAnswer: 2  // C对应索引2
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建直径标注？",
-                options: ["DIMDIAMETER", "DDI", "DIMRADIUS", "DRA"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建半径标注？",
-                options: ["DIMRADIUS", "DRA", "DIMDIAMETER", "DDI"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建弧长标注？",
-                options: ["DIMARC", "DAR", "DIMARCLEN", "DAL"],
-                answer: "B",
-                originalAnswer: 1  // B对应索引1
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建坐标标注？",
-                options: ["DIMORDINATE", "DOR", "DIMXY", "DXY"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建引线标注？",
-                options: ["QLEADER", "LE", "MLEADER", "MLD"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建多重引线标注？",
-                options: ["MLEADER", "MLD", "QLEADER", "LE"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建基线标注？",
-                options: ["DIMBASELINE", "DBA", "DIMCONTINUE", "DCO"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建连续标注？",
-                options: ["DIMCONTINUE", "DCO", "DIMBASELINE", "DBA"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建折弯半径标注？",
-                options: ["DIMJOGGED", "DJR", "DIMRADIUS", "DRA"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建折弯标注？",
-                options: ["DIMJOGGED", "DJR", "DIMBREAK", "DBR"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建公差标注？",
-                options: ["TOLERANCE", "TOL", "DIMTOLERANCE", "DTOL"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速标注？",
-                options: ["QDIM", "QD", "QUICKDIM", "QDM"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速引线？",
-                options: ["QLEADER", "LE", "MLEADER", "MLD"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速多重引线？",
-                options: ["MLEADER", "MLD", "QLEADER", "LE"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速选择？",
-                options: ["QSELECT", "QS", "SELECT", "SEL"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速计算器？",
-                options: ["CAL", "CALC", "CALCULATOR", "CALCULATE"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速查看？",
-                options: ["LIVE", "LIVEPREVIEW", "PREVIEW", "VIEW"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速属性？",
-                options: ["QATTEDIT", "QATTE", "ATTEDIT", "ATE"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速选择集？",
-                options: ["QSELECT", "QS", "SELECT", "SEL"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速属性编辑？",
-                options: ["QATTEDIT", "QATTE", "ATTEDIT", "ATE"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速标注编辑？",
-                options: ["QDIM", "QD", "DIMEDIT", "DED"],
-                answer: "B",
-                originalAnswer: 1  // B对应索引1
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速文字编辑？",
-                options: ["QTEXT", "QT", "DDEDIT", "ED"],
-                answer: "B",
-                originalAnswer: 1  // B对应索引1
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速属性定义？",
-                options: ["ATTDEF", "ATTD", "ATT", "AD"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速属性提取？",
-                options: ["ATTEXT", "ATT", "ATEX", "ATX"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速属性同步？",
-                options: ["ATTSYNC", "ATS", "ATT", "ATS"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速块属性管理器？",
-                options: ["BATTMAN", "BAT", "BAM", "BMA"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速块编辑？",
-                options: ["BEDIT", "BE", "BLOCKEDIT", "BLED"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速块插入？",
-                options: ["INSERT", "I", "INS", "IN"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速块创建？",
-                options: ["BLOCK", "B", "BLK", "CREATEBLOCK"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速块分解？",
-                options: ["EXPLODE", "X", "EXP", "BREAK"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速外部参照？",
-                options: ["XREF", "XR", "X", "ATTACH"],
-                answer: "D",
-                originalAnswer: 3  // D对应索引3
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速外部参照绑定？",
-                options: ["XBIND", "BIND", "X", "B"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速外部参照裁剪？",
-                options: ["XCLIP", "XC", "XCR", "XCLIP"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速外部参照路径？",
-                options: ["XPATH", "XP", "XREFPATH", "XRP"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速外部参照重载？",
-                options: ["XRELOAD", "XR", "XREFRELOAD", "XRR"],
-                answer: "A",
-                originalAnswer: 0  // A对应索引0
-            },
-            {
-                type: "单选题",
-                question: "在AutoCAD中，以下哪个命令可以用于创建快速外部参照卸载？",
-                options: ["XUNLOAD", "XU", "XREFUNLOAD", "XRU"],
+                question: "AutoCAD 中,若要标注倾斜直线的长度，应该选用下面()命令来标注。",
+                options: ["对齐标注", "快速标注", "连续标注", "线性标注"],
                 answer: "A",
                 originalAnswer: 0  // A对应索引0
             },
             {
                 type: "判断题",
-                question: "AutoCAD中,文本对象运用\"偏移\"命令时，可将原对象进行偏移。",
+                question: "在 AutoCAD 中查询距离仅报告两点之间的真实三维距离。",
                 options: ["正确", "错误"],
                 answer: "错误",
                 originalAnswer: 1  // 错误对应索引1
             },
             {
                 type: "判断题",
-                question: "AutoCAD中,定数等分命令用于等分一个选定的实体，并在等分点处设置点标记符号或图块。用户输入的数值是等分段数，而不是设置点的个数。",
+                question: "在连接和传动的作用上，联轴器和离合器是相同的。",
                 options: ["正确", "错误"],
                 answer: "正确",
                 originalAnswer: 0  // 正确对应索引0
             },
             {
                 type: "判断题",
-                question: "AutoCAD中,比例缩放指相对于真实图形的大小。",
+                question: "在 AutoCAD 绘图辅助工具栏中，\"正交\"模式和\"极轴追踪\"模式可以同时打开使用。",
                 options: ["正确", "错误"],
                 answer: "错误",
                 originalAnswer: 1  // 错误对应索引1
             },
             {
                 type: "判断题",
-                question: "AutoCAD中的倒圆角命令(fillet)可用于两条相互平行的直线。",
+                question: "在 AutoCAD 中镜像时，文字方向不可以更改。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "范围缩放可以显示图形范围并使所有对象最大显示。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "轮系可以实现变速和变向要求。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,OOPS 能把上一次被 ERASE 命令删除的实体恢复出来，且只能恢复一次。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "轴的强度是保证轴正常工作的基本条件。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "锥齿轮只能用来传递两正交轴之间的运动和动力。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 无法实现类似 Word 的文字查找或者替换功能。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "为降低应力集中，轴上应制出退刀槽和越程槽等工艺结构。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "图样中标注的螺纹长度均指不包括螺尾在内的有效螺纹长度，否则，应另加说明或按实际需要标注。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,想绘制某图层的图形时，必须先将该图层置为当前图层。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,平移和缩放预览图将会影响图形的打印。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "在 AutoCAD 中，左右镜像时，镜像的基点是从左向右拉。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "在装配图中，当剖切平面通过的某些部件为标准产品或该部件已由其他图形表示清楚时可按不剖绘制。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,当丢失了下拉菜单，可以用 LOAD 命令重新加载标准菜单。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,执行\"拉伸\"命令时，被拉伸图形本身不得有重叠或相交之处。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,用户可以自定义状态栏托盘，以设置是否显示当前光标的坐标数值。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中，\"多行文字\"和\"单行文字\"都是创建文字对象，本质是一样的。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,使用编辑图形命令时（如移动、阵列等）可以先点命令，再选图形；也可首先选图形，再点命令。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,当执行\"实时缩放\"命令时，可以无限地放大或缩小当前图形。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "缩放命令\"zoom\"和缩放命令\"scale\"都可以调整对象的大小，可以互换使用。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "工作时只受弯矩不承受转矩的轴称为心轴。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,所有的命令都可以采用键盘输入（即快捷方式）以提高绘图制度，快捷方式的字母可由用户自己来定义。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "在 Autocad 中，若要取消正在执行的命令，可以按 delete 键。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "对于直齿圆柱齿轮传动，其齿根弯曲疲劳强度主要取决于中心距和模数。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "V 带底面与带轮槽底面是接触的。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,替代标注样式与修改标注样式不同的是，当创建了代替标注样式后，该标注样式只对此后的尺寸标注起作用，不会改变创建前的标注样式。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,若在一个线性标注数值前面添加\"±\"符号，应输入 \"%%u\"命令。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "螺纹连接、过盈配合连接都属于静联接。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "设置十字光标大小需要在\"选项\"对话框中的\"用户系统配置\"选项卡中设置。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,填充图案可以是关联的，也可以是非关联的。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,图层锁定后，用户只能观察该图层上的图形，不能对其编辑和修改，图形也不能显示和输出。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中的图案填充（hatch）与其边界是可关联的。即图案填充的范围可随边界的改变而改变。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "在 AutoCAD 中，可以通过输入一个点的坐标值或测量两个旋转角度定义观察方向。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "视图、剖视图等画法和标注规定只适用于零件图，不适用于装配图。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "在 AutoCAD 中，标尺寸时，尺寸界线可以贴着图形。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "同一表面上有不同的表面粗糙度要求时，须用细实线画出其分界线，并注出尺寸和相应的表面粗糙度代号。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "同一工作条件，若不改变轴的结构和尺寸，仅将轴的材料由碳钢改为合金钢，可以提高轴的刚度，但不能提高轴的强度。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "链传动中的节距越大，链条中各零件尺寸越大，链传动的运动不均匀性增大。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "标注位置公差时，基准要素只能用一个字母表示，不能用几个字母或几个字母的组合表示基准要素。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,当标注关联的图形对象尺寸发生改变时，必须对标进行更新。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,文字、面域、构造线仅能作为延伸的边界，不能作为延伸对象。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,为了弹出对象快捷捕捉菜单，需要在按住 Shift 键的同时右击。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,\"正交\"模式不能控制键盘输入的坐标点的位置，只能控制鼠标拾取点的方位。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "在设计 V 带传动时，V 带的型号是根据计算功率 Pc 和小轮转速 n1 选取的。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,使用 Rectangle 命令创建的矩形，其边总是水平或竖直的。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "在 AutoCAD 中偏移时，可以连续使用。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "在 AutoCAD 中，删除按钮只能删除上一步操作。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,使用 MIRROR 命令可以绘制出所选对象的对称图形。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "V 带传动的主要失效形式是打滑和疲劳断裂。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,创建多行文字时，用户是在命令行中输入文字的。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "在 AutoCAD 中，硬行修改后的尺寸在使用拉伸命令时会随其变化。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,使用 Text 命令创建的各个文字对象是相互独立的。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "在 AutoCAD 中，特性命令可以修改任何物体的属性。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,文本对象运用\"偏移\"命令时，可将原对象进行偏移。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,定数等分命令用于等分一个选定的实体，并在等分点处设置点标记符号或图块。用户输入的数值是等分段数，而不是设置点的个数。",
+                options: ["正确", "错误"],
+                answer: "正确",
+                originalAnswer: 0  // 正确对应索引0
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中,比例缩放指相对于真实图形的大小。",
+                options: ["正确", "错误"],
+                answer: "错误",
+                originalAnswer: 1  // 错误对应索引1
+            },
+            {
+                type: "判断题",
+                question: "AutoCAD 中的倒圆角命令（fillet）可用于两条相互平行的直线。",
                 options: ["正确", "错误"],
                 answer: "正确",
                 originalAnswer: 0  // 正确对应索引0
@@ -1663,14 +1673,14 @@
             },
             {
                 type: "判断题",
-                question: "AutoCAD中,使用样板图来创建新的图形，新的图形文件与所用的样板文件的设置只能是一样的。",
+                question: "AutoCAD 中,使用样板图来创建新的图形，新的图形文件与所用的样板文件的设置只能是一样的。",
                 options: ["正确", "错误"],
                 answer: "错误",
                 originalAnswer: 1  // 错误对应索引1
             },
             {
                 type: "判断题",
-                question: "AutoCAD中,COPY命令用于产生对象的拷贝，而保持原对象不变。",
+                question: "AutoCAD 中,COPY 命令用于产生对象的拷贝，而保持原对象不变。",
                 options: ["正确", "错误"],
                 answer: "正确",
                 originalAnswer: 0  // 正确对应索引0
@@ -1684,7 +1694,7 @@
             },
             {
                 type: "判断题",
-                question: "AutoCAD的图标菜单栏可以定制，可以删除，也可以增加。",
+                question: "AutoCAD 的图标菜单栏可以定制，可以删除，也可以增加。",
                 options: ["正确", "错误"],
                 answer: "正确",
                 originalAnswer: 0  // 正确对应索引0
@@ -1698,28 +1708,28 @@
             },
             {
                 type: "判断题",
-                question: "AutoCAD中,在插入块时，块可以缩放或旋转。",
+                question: "AutoCAD 中,在插入块时，块可以缩放或旋转。",
                 options: ["正确", "错误"],
                 answer: "正确",
                 originalAnswer: 0  // 正确对应索引0
             },
             {
                 type: "判断题",
-                question: "AutoCAD中,多线段的每一段的宽度可以单独指定。",
+                question: "AutoCAD 中,多线段的每一段的宽度可以单独指定。",
                 options: ["正确", "错误"],
                 answer: "正确",
                 originalAnswer: 0  // 正确对应索引0
             },
             {
                 type: "判断题",
-                question: "在AutoCAD中无法使用透视方式观察三维模型。",
+                question: "在 AutoCAD 中无法使用透视方式观察三维模型。",
                 options: ["正确", "错误"],
                 answer: "错误",
                 originalAnswer: 1  // 错误对应索引1
             },
             {
                 type: "判断题",
-                question: "在AutoCAD中，两直线之间倒角只能倒45度角。",
+                question: "在 AutoCAD 中，两直线之间倒角只能倒 45 度角。",
                 options: ["正确", "错误"],
                 answer: "错误",
                 originalAnswer: 1  // 错误对应索引1
@@ -1734,6 +1744,7 @@
         let selectedOption = '';
         let startX = 0;
         let startY = 0;
+        let currentSessionAnswers = []; // 记录当前会话的答题情况
 
         // 初始化页面
         function init() {
@@ -1743,21 +1754,28 @@
             currentQuestions.forEach(question => {
                 // 保存原始答案索引
                 const originalAnswerIndex = question.originalAnswer;
+                // 保存原始选项数组
+                const originalOptions = [...question.options];
                 // 乱序选项
-                const shuffledOptions = [...question.options].sort(() => Math.random() - 0.5);
+                const shuffledOptions = [...originalOptions].sort(() => Math.random() - 0.5);
                 
                 // 找到原始答案在乱序后的新索引
-                const newAnswerIndex = shuffledOptions.findIndex(opt => opt === question.options[originalAnswerIndex]);
+                const newAnswerIndex = shuffledOptions.findIndex(opt => opt === originalOptions[originalAnswerIndex]);
                 
                 // 更新题目选项和答案
                 question.options = shuffledOptions;
-                question.answer = String.fromCharCode(65 + newAnswerIndex); // A, B, C, D...
+                if (question.type === "单选题") {
+                    question.answer = String.fromCharCode(65 + newAnswerIndex); // A, B, C, D...
+                } else {
+                    question.answer = originalOptions[originalAnswerIndex]; // 对于判断题，保持原答案
+                }
             });
             
             currentQuestionIndex = 0;
             correctAnswers = 0;
             totalAnswered = 0;
             selectedOption = '';
+            currentSessionAnswers = [];
             
             // 显示第一题
             showQuestion(currentQuestionIndex);
@@ -1789,11 +1807,11 @@
             `;
             
             for (let i = 0; i < question.options.length; i++) {
-                const optionValue = String.fromCharCode(65 + i); // A, B, C, D...
+                const optionValue = question.type === "单选题" ? String.fromCharCode(65 + i) : question.options[i]; // A, B, C, D... 或者直接显示选项
                 html += `
                     <label class="option" data-value="${optionValue}">
                         <input type="radio" name="answer" value="${optionValue}" style="display:none;">
-                        ${optionValue}. ${question.options[i]}
+                        ${question.type === "单选题" ? optionValue + ". " : ""}${question.options[i]}
                     </label>
                 `;
             }
@@ -1832,10 +1850,23 @@
             const currentQuestion = currentQuestions[currentQuestionIndex];
             const isCorrect = selectedOption === currentQuestion.answer;
             
+            // 记录当前答题情况
+            currentSessionAnswers.push({
+                questionIndex: currentQuestionIndex,
+                question: currentQuestion.question,
+                selectedOption: selectedOption,
+                correctOption: currentQuestion.answer,
+                isCorrect: isCorrect,
+                type: currentQuestion.type
+            });
+            
             // 更新统计
             totalAnswered++;
             if (isCorrect) {
                 correctAnswers++;
+            } else {
+                // 答错时自动加入错题本
+                addToErrorBook(currentQuestionIndex);
             }
             
             // 显示反馈
@@ -1845,7 +1876,7 @@
                 feedbackArea.textContent = '回答正确！';
             } else {
                 feedbackArea.className = 'feedback incorrect';
-                feedbackArea.innerHTML = `回答错误！正确答案是：${currentQuestion.answer}。${currentQuestion.options[parseInt(currentQuestion.answer.charCodeAt(0) - 65)]}`;
+                feedbackArea.innerHTML = `回答错误！正确答案是：${currentQuestion.answer}。`;
             }
             feedbackArea.style.display = 'block';
             
@@ -1955,6 +1986,136 @@
             }
         }
 
+        // 侧栏功能
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('active');
+        }
+
+        // 答题记录功能
+        function showRecords() {
+            document.getElementById('records-content').style.display = 'block';
+            document.getElementById('errors-content').style.display = 'none';
+            
+            // 加载答题记录
+            loadRecords();
+        }
+
+        function loadRecords() {
+            const recordsList = document.getElementById('records-list');
+            const records = JSON.parse(localStorage.getItem('cadQuizRecords')) || [];
+            
+            if (records.length === 0) {
+                recordsList.innerHTML = '<div class="no-records">暂无答题记录</div>';
+                return;
+            }
+            
+            recordsList.innerHTML = '';
+            records.forEach((record, index) => {
+                const recordItem = document.createElement('div');
+                recordItem.className = 'record-item';
+                recordItem.innerHTML = `
+                    <h4>第${index + 1}次答题</h4>
+                    <p>开始时间: ${record.startTime}</p>
+                    <p>结束时间: ${record.endTime}</p>
+                    <p>总题数: ${record.totalQuestions}</p>
+                    <p>答对题数: ${record.correctAnswers}</p>
+                    <p>正确率: ${Math.round((record.correctAnswers / record.totalQuestions) * 100)}%</p>
+                `;
+                recordsList.appendChild(recordItem);
+            });
+        }
+
+        // 错题本功能
+        function showErrors() {
+            document.getElementById('records-content').style.display = 'none';
+            document.getElementById('errors-content').style.display = 'block';
+            
+            // 加载错题
+            loadErrorBook();
+        }
+
+        function loadErrorBook() {
+            const errorsList = document.getElementById('errors-list');
+            const errors = JSON.parse(localStorage.getItem('cadQuizErrors')) || [];
+            
+            if (errors.length === 0) {
+                errorsList.innerHTML = '<div class="no-records">暂无错题</div>';
+                return;
+            }
+            
+            errorsList.innerHTML = '';
+            errors.forEach((error, index) => {
+                const errorItem = document.createElement('div');
+                errorItem.className = 'error-item';
+                errorItem.innerHTML = `
+                    <button class="delete-btn" data-index="${index}">删除</button>
+                    <h4>第${index + 1}题</h4>
+                    <p><strong>题目:</strong> ${error.question}</p>
+                    <p><strong>类型:</strong> ${error.type}</p>
+                    <p><strong>正确答案:</strong> ${error.correctOption}</p>
+                    <p><strong>你的答案:</strong> ${error.selectedOption || '未作答'}</p>
+                `;
+                errorsList.appendChild(errorItem);
+            });
+            
+            // 添加删除事件
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    deleteError(index);
+                });
+            });
+        }
+
+        function addToErrorBook(questionIndex) {
+            const question = currentQuestions[questionIndex];
+            const errors = JSON.parse(localStorage.getItem('cadQuizErrors')) || [];
+            
+            // 检查是否已经存在于错题本中
+            const exists = errors.some(error => error.question === question.question);
+            if (!exists) {
+                errors.push({
+                    questionIndex: questionIndex,
+                    question: question.question,
+                    correctOption: question.answer,
+                    selectedOption: selectedOption,
+                    type: question.type,
+                    timestamp: new Date().toISOString()
+                });
+                
+                localStorage.setItem('cadQuizErrors', JSON.stringify(errors));
+            }
+        }
+
+        function deleteError(index) {
+            const errors = JSON.parse(localStorage.getItem('cadQuizErrors')) || [];
+            errors.splice(index, 1);
+            localStorage.setItem('cadQuizErrors', JSON.stringify(errors));
+            loadErrorBook();
+        }
+
+        // 保存当前会话的答题记录
+        function saveRecord() {
+            if (currentSessionAnswers.length > 0) {
+                const records = JSON.parse(localStorage.getItem('cadQuizRecords')) || [];
+                const newRecord = {
+                    startTime: new Date().toLocaleString(),
+                    endTime: new Date().toLocaleString(),
+                    totalQuestions: currentQuestions.length,
+                    correctAnswers: correctAnswers,
+                    answers: currentSessionAnswers
+                };
+                
+                records.push(newRecord);
+                localStorage.setItem('cadQuizRecords', JSON.stringify(records));
+            }
+        }
+
         // 页面加载完成后初始化
         window.onload = function() {
             init();
@@ -1969,6 +2130,12 @@
             document.getElementById('confirmYes').addEventListener('click', confirmReset);
             document.getElementById('confirmNo').addEventListener('click', cancelReset);
             
+            // 绑定侧栏按钮事件
+            document.getElementById('sidebar-btn').addEventListener('click', toggleSidebar);
+            document.getElementById('close-sidebar').addEventListener('click', closeSidebar);
+            document.getElementById('show-records-btn').addEventListener('click', showRecords);
+            document.getElementById('show-errors-btn').addEventListener('click', showErrors);
+            
             // 绑定触摸事件用于滑动切换
             const container = document.getElementById('question-container');
             container.addEventListener('touchstart', handleTouchStart, false);
@@ -1980,8 +2147,18 @@
                 if (event.target === modal) {
                     modal.style.display = 'none';
                 }
+                
+                const sidebar = document.getElementById('sidebar');
+                if (event.target === sidebar && sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                }
             };
         };
+        
+        // 在页面关闭前保存当前会话记录
+        window.addEventListener('beforeunload', function() {
+            saveRecord();
+        });
     </script>
 </body>
 </html>

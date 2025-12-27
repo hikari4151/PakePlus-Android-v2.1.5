@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CAD题库v1.2我恨出生文本识别 : (</title>
+    <title>CAD题库最新V1.3zct禁止使用</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,17 +12,20 @@
             padding: 20px;
             background-color: #f5f5f5;
             position: relative;
+            transition: background-color 0.3s, color 0.3s;
         }
         .container {
             background-color: white;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: background-color 0.3s, color 0.3s;
         }
         h1 {
             text-align: center;
             color: #333;
             margin-bottom: 30px;
+            transition: color 0.3s;
         }
         .progress {
             text-align: center;
@@ -32,6 +35,7 @@
             padding: 10px;
             background-color: #f0f0f0;
             border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
         }
         .question-container {
             margin-bottom: 20px;
@@ -41,6 +45,7 @@
             background-color: #fafafa;
             position: relative;
             min-height: 300px;
+            transition: background-color 0.3s, border-color 0.3s;
         }
         .question-text {
             font-size: 18px;
@@ -57,7 +62,7 @@
             border: 1px solid #ccc;
             border-radius: 4px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, border-color 0.3s;
         }
         .option:hover {
             background-color: #e9e9e9;
@@ -77,6 +82,7 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
+            transition: background-color 0.3s;
         }
         .btn-submit {
             background-color: #007bff;
@@ -263,11 +269,173 @@
             padding-bottom: 10px;
             border-bottom: 1px solid #ddd;
         }
+        
+        /* 深色模式样式 */
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+        body.dark-mode .container {
+            background-color: #2d2d2d;
+            color: #e0e0e0;
+        }
+        body.dark-mode h1 {
+            color: #e0e0e0;
+        }
+        body.dark-mode .progress {
+            background-color: #3a3a3a;
+            color: #e0e0e0;
+        }
+        body.dark-mode .question-container {
+            background-color: #3a3a3a;
+            border-color: #555;
+        }
+        body.dark-mode .option {
+            background-color: #3a3a3a;
+            border-color: #555;
+            color: #e0e0e0;
+        }
+        body.dark-mode .option:hover {
+            background-color: #4a4a4a;
+        }
+        body.dark-mode .option.selected {
+            background-color: #2a3f5f;
+            border-color: #4d7cff;
+        }
+        body.dark-mode .feedback.correct {
+            background-color: #2d4d3d;
+            color: #a3d9a3;
+            border-color: #3d6d3d;
+        }
+        body.dark-mode .feedback.incorrect {
+            background-color: #4d2d3d;
+            color: #e6b3b3;
+            border-color: #6d3d3d;
+        }
+        body.dark-mode .question-type {
+            color: #4d7cff;
+        }
+        body.dark-mode .modal-content {
+            background-color: #2d2d2d;
+            color: #e0e0e0;
+            border-color: #555;
+        }
+        body.dark-mode .sidebar {
+            background-color: #2d2d2d;
+            color: #e0e0e0;
+        }
+        body.dark-mode .sidebar-header {
+            border-bottom-color: #555;
+        }
+        body.dark-mode .record-item {
+            background-color: #3a3a3a;
+            border-color: #555;
+        }
+        body.dark-mode .error-item {
+            background-color: #3a3a3a;
+            border-color: #555;
+        }
+        body.dark-mode .close-sidebar {
+            color: #e0e0e0;
+        }
+        body.dark-mode .btn-submit {
+            background-color: #0056b3;
+        }
+        body.dark-mode .btn-next {
+            background-color: #1e7e34;
+        }
+        body.dark-mode .btn-prev {
+            background-color: #128ba0;
+        }
+        body.dark-mode .btn-reset {
+            background-color: #5a6268;
+        }
+        
+        /* 深色模式开关样式 */
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 30px;
+            background-color: #ccc;
+            border-radius: 15px;
+            border: none;
+            cursor: pointer;
+            outline: none;
+            transition: background-color 0.3s;
+        }
+        
+        .theme-toggle.dark {
+            background-color: #555;
+        }
+        
+        .theme-toggle::before {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background-color: white;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+        
+        .theme-toggle.dark::before {
+            transform: translateX(30px);
+        }
+        
+        /* 侧栏底部深色模式开关容器 */
+        .dark-mode-toggle-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+        }
+        
+        .dark-mode-toggle-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .dark-mode-toggle-switch {
+            width: 50px;
+            height: 25px;
+            background-color: #ccc;
+            border-radius: 12.5px;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            outline: none;
+            transition: background-color 0.3s;
+        }
+        
+        .dark-mode-toggle-switch:checked {
+            background-color: #4d7cff;
+        }
+        
+        .dark-mode-toggle-switch::before {
+            content: '';
+            position: absolute;
+            width: 21px;
+            height: 21px;
+            border-radius: 50%;
+            background-color: white;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+        
+        .dark-mode-toggle-switch:checked::before {
+            transform: translateX(25px);
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>CAD题库v1.2我恨出生文本识别 : (</h1>
+        <h1>CAD题库最新V1.3zct禁止使用</h1>
         <div class="progress">
             已做: <span id="progress">0题</span> | 
             正确率: <span id="accuracy">0%</span>
@@ -280,7 +448,6 @@
             <div id="feedback-area" class="feedback" style="display:none;"></div>
             <div class="controls">
                 <button class="btn-prev" id="prev-btn" style="display:none;">上一题</button>
-                <button class="btn-submit" id="submit-btn">提交答案</button>
                 <button class="btn-next" id="next-btn" style="display:none;">下一题</button>
                 <button class="btn-reset" id="reset-btn">重新开始</button>
             </div>
@@ -316,8 +483,17 @@
                     <!-- 错题将动态加载到这里 -->
                 </div>
             </div>
+            
+            <!-- 侧栏底部深色模式开关 -->
+            <div class="dark-mode-toggle-container">
+                <label class="dark-mode-toggle-label">深色模式</label>
+                <input type="checkbox" id="dark-mode-toggle" class="dark-mode-toggle-switch">
+            </div>
         </div>
     </div>
+
+    <!-- 深色模式切换按钮 -->
+    <button class="theme-toggle" id="theme-toggle"></button>
 
     <!-- 确认重置弹窗 -->
     <div id="confirmModal" class="modal">
@@ -665,7 +841,7 @@
             },
             {
                 type: "单选题",
-                question: "在 AutoCAD 中执行()命令时，空格键与[Enter]键的功效不同。",
+                question: "在 AutoCAD 中，执行()命令时，空格键与[Enter]键的功效不同。",
                 options: ["直线", "单行文字", "修剪", "分解"],
                 answer: "B",
                 originalAnswer: 1  // B对应索引1
@@ -889,7 +1065,7 @@
             },
             {
                 type: "单选题",
-                question: "在 Auto cad 中，标注±0.00 应输入()。",
+                question: "在 cad 中，标注±0.00 应输入()。",
                 options: ["%%C 0.00", "%%P 0.00", "%%D 0.00", "%%R 0.00"],
                 answer: "B",
                 originalAnswer: 1  // B对应索引1
@@ -1582,7 +1758,7 @@
             },
             {
                 type: "判断题",
-                question: "在 AutoCAD 中偏移时，可以连续使用。",
+                question: "在 AutoCAD 中，偏移时，可以连续使用。",
                 options: ["正确", "错误"],
                 answer: "正确",
                 originalAnswer: 0  // 正确对应索引0
@@ -1750,17 +1926,29 @@
         function init() {
             // 打乱题目顺序
             currentQuestions = [...questionBank].sort(() => Math.random() - 0.5);
-            // 对每道题的选项进行乱序
+            // 对每道题的选项进行乱序（修复选项乱序bug）
             currentQuestions.forEach(question => {
                 // 保存原始答案索引
                 const originalAnswerIndex = question.originalAnswer;
                 // 保存原始选项数组
                 const originalOptions = [...question.options];
-                // 乱序选项
-                const shuffledOptions = [...originalOptions].sort(() => Math.random() - 0.5);
                 
-                // 找到原始答案在乱序后的新索引
-                const newAnswerIndex = shuffledOptions.findIndex(opt => opt === originalOptions[originalAnswerIndex]);
+                // 创建带索引的选项数组，用于后续正确答案映射
+                const optionsWithIndex = question.options.map((option, index) => ({
+                    text: option,
+                    index: index
+                }));
+                
+                // 打乱选项
+                const shuffledOptionsWithIndex = [...optionsWithIndex].sort(() => Math.random() - 0.5);
+                
+                // 提取打乱后的选项文本
+                const shuffledOptions = shuffledOptionsWithIndex.map(item => item.text);
+                
+                // 计算原始答案在打乱后的新索引
+                const newAnswerIndex = shuffledOptionsWithIndex.findIndex(item => 
+                    item.index === originalAnswerIndex
+                );
                 
                 // 更新题目选项和答案
                 question.options = shuffledOptions;
@@ -1793,7 +1981,6 @@
                     <p>正确率：${currentQuestions.length > 0 ? Math.round((correctAnswers / currentQuestions.length) * 100) : 0}%</p>
                 `;
                 document.getElementById('feedback-area').style.display = 'none';
-                document.getElementById('submit-btn').style.display = 'none';
                 document.getElementById('next-btn').style.display = 'none';
                 document.getElementById('prev-btn').style.display = 'none';
                 return;
@@ -1830,11 +2017,13 @@
                     // 添加当前选项的选中状态
                     this.classList.add('selected');
                     selectedOption = this.getAttribute('data-value');
+                    
+                    // 自动提交答案
+                    submitAnswer();
                 });
             });
             
             // 更新按钮状态
-            document.getElementById('submit-btn').style.display = 'inline-block';
             document.getElementById('next-btn').style.display = 'none';
             document.getElementById('prev-btn').style.display = index > 0 ? 'inline-block' : 'none';
             document.getElementById('feedback-area').style.display = 'none';
@@ -1843,7 +2032,6 @@
         // 提交答案
         function submitAnswer() {
             if (!selectedOption) {
-                alert('请选择一个答案！');
                 return;
             }
             
@@ -1890,7 +2078,6 @@
                 }, 1000);
             } else {
                 // 答错时显示下一题按钮，让用户可以手动跳过
-                document.getElementById('submit-btn').style.display = 'none';
                 document.getElementById('next-btn').style.display = 'inline-block';
             }
         }
@@ -1910,7 +2097,6 @@
                     <p>正确率：${Math.round((correctAnswers / currentQuestions.length) * 100)}%</p>
                 `;
                 document.getElementById('feedback-area').style.display = 'none';
-                document.getElementById('submit-btn').style.display = 'none';
                 document.getElementById('next-btn').style.display = 'none';
                 document.getElementById('prev-btn').style.display = 'none';
             }
@@ -2116,12 +2302,35 @@
             }
         }
 
+        // 深色模式功能
+        function toggleDarkMode() {
+            const body = document.body;
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            
+            body.classList.toggle('dark-mode');
+            darkModeToggle.checked = body.classList.contains('dark-mode');
+            
+            // 保存用户偏好到localStorage
+            localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
+        }
+
+        // 检查并应用深色模式
+        function checkDarkMode() {
+            const body = document.body;
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            const savedDarkMode = localStorage.getItem('darkMode');
+            
+            if (savedDarkMode === 'true') {
+                body.classList.add('dark-mode');
+                darkModeToggle.checked = true;
+            }
+        }
+
         // 页面加载完成后初始化
         window.onload = function() {
             init();
             
             // 绑定按钮事件
-            document.getElementById('submit-btn').addEventListener('click', submitAnswer);
             document.getElementById('next-btn').addEventListener('click', nextQuestion);
             document.getElementById('prev-btn').addEventListener('click', prevQuestion);
             document.getElementById('reset-btn').addEventListener('click', resetQuiz);
@@ -2135,6 +2344,9 @@
             document.getElementById('close-sidebar').addEventListener('click', closeSidebar);
             document.getElementById('show-records-btn').addEventListener('click', showRecords);
             document.getElementById('show-errors-btn').addEventListener('click', showErrors);
+            
+            // 绑定深色模式开关事件
+            document.getElementById('dark-mode-toggle').addEventListener('change', toggleDarkMode);
             
             // 绑定触摸事件用于滑动切换
             const container = document.getElementById('question-container');
@@ -2153,6 +2365,9 @@
                     sidebar.classList.remove('active');
                 }
             };
+            
+            // 检查并应用深色模式
+            checkDarkMode();
         };
         
         // 在页面关闭前保存当前会话记录

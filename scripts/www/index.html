@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CAD题库最新V1.3zct禁止使用</title>
+    <title>CAD题库最新V1.4</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -111,6 +111,14 @@
         }
         .btn-reset:hover {
             background-color: #545b62;
+        }
+        .randomize-toggle {
+            background-color: #ffc107;
+            color: #212529;
+            margin: 0 10px;
+        }
+        .randomize-toggle:hover {
+            background-color: #e0a800;
         }
         .feedback {
             margin-top: 15px;
@@ -350,6 +358,13 @@
         body.dark-mode .btn-reset {
             background-color: #5a6268;
         }
+        body.dark-mode .randomize-toggle {
+            background-color: #e0a800;
+            color: #212529;
+        }
+        body.dark-mode .randomize-toggle:hover {
+            background-color: #d39e00;
+        }
         
         /* 深色模式开关样式 */
         .theme-toggle {
@@ -435,7 +450,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>CAD题库最新V1.3zct禁止使用</h1>
+        <h1>CAD题库最新V1.4</h1>
         <div class="progress">
             已做: <span id="progress">0题</span> | 
             正确率: <span id="accuracy">0%</span>
@@ -449,6 +464,7 @@
             <div class="controls">
                 <button class="btn-prev" id="prev-btn" style="display:none;">上一题</button>
                 <button class="btn-next" id="next-btn" style="display:none;">下一题</button>
+                <button class="randomize-toggle" id="randomize-btn">题目乱序</button>
                 <button class="btn-reset" id="reset-btn">重新开始</button>
             </div>
             <div class="swipe-hint">左右滑动可切换题目</div>
@@ -1921,43 +1937,26 @@
         let startX = 0;
         let startY = 0;
         let currentSessionAnswers = []; // 记录当前会话的答题情况
+        let isRandomized = false; // 是否启用题目乱序
+
+        // 随机化数组函数
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
 
         // 初始化页面
         function init() {
-            // 打乱题目顺序
-            currentQuestions = [...questionBank].sort(() => Math.random() - 0.5);
-            // 对每道题的选项进行乱序（修复选项乱序bug）
-            currentQuestions.forEach(question => {
-                // 保存原始答案索引
-                const originalAnswerIndex = question.originalAnswer;
-                // 保存原始选项数组
-                const originalOptions = [...question.options];
-                
-                // 创建带索引的选项数组，用于后续正确答案映射
-                const optionsWithIndex = question.options.map((option, index) => ({
-                    text: option,
-                    index: index
-                }));
-                
-                // 打乱选项
-                const shuffledOptionsWithIndex = [...optionsWithIndex].sort(() => Math.random() - 0.5);
-                
-                // 提取打乱后的选项文本
-                const shuffledOptions = shuffledOptionsWithIndex.map(item => item.text);
-                
-                // 计算原始答案在打乱后的新索引
-                const newAnswerIndex = shuffledOptionsWithIndex.findIndex(item => 
-                    item.index === originalAnswerIndex
-                );
-                
-                // 更新题目选项和答案
-                question.options = shuffledOptions;
-                if (question.type === "单选题") {
-                    question.answer = String.fromCharCode(65 + newAnswerIndex); // A, B, C, D...
-                } else {
-                    question.answer = originalOptions[originalAnswerIndex]; // 对于判断题，保持原答案
-                }
-            });
+            // 根据是否启用乱序来设置当前题目
+            if (isRandomized) {
+                currentQuestions = shuffleArray(questionBank);
+            } else {
+                currentQuestions = [...questionBank];
+            }
             
             currentQuestionIndex = 0;
             correctAnswers = 0;
@@ -2142,6 +2141,13 @@
             document.getElementById('confirmModal').style.display = 'none';
         }
 
+        // 切换题目乱序
+        function toggleRandomize() {
+            isRandomized = !isRandomized;
+            document.getElementById('randomize-btn').textContent = isRandomized ? '题目顺序' : '题目乱序';
+            init();
+        }
+
         // 触摸滑动事件处理
         function handleTouchStart(event) {
             startX = event.touches[0].clientX;
@@ -2294,7 +2300,8 @@
                     endTime: new Date().toLocaleString(),
                     totalQuestions: currentQuestions.length,
                     correctAnswers: correctAnswers,
-                    answers: currentSessionAnswers
+                    answers: currentSessionAnswers,
+                    isRandomized: isRandomized
                 };
                 
                 records.push(newRecord);
@@ -2333,6 +2340,7 @@
             // 绑定按钮事件
             document.getElementById('next-btn').addEventListener('click', nextQuestion);
             document.getElementById('prev-btn').addEventListener('click', prevQuestion);
+            document.getElementById('randomize-btn').addEventListener('click', toggleRandomize);
             document.getElementById('reset-btn').addEventListener('click', resetQuiz);
             
             // 绑定确认弹窗按钮事件
@@ -2371,9 +2379,9 @@
         };
         
         // 在页面关闭前保存当前会话记录
-        window.addEventListener('beforeunload', function() {
+        window.onbeforeunload = function() {
             saveRecord();
-        });
+        };
     </script>
 </body>
-</html>
+
